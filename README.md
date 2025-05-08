@@ -23,7 +23,7 @@ Bardzo proszę to zrobić PRZED warsztatami, oszczędzimy w ten sposób bardzo d
 - **Julia**: https://julialang.org/install/ albo https://docs.julialang.org/en/v1/manual/installation/
 
 Jeśli ktoś ma problem z instalacją, to zachęcam do kontaktu z organizatorami PRZED warsztatami.
-Dla osób z Windowsem, które nie miały wcześniej do czynienia z komputerami zapraszam do [prostego opisu instalacji ponizej](#Instalacja_Julii)
+Dla osób z Windowsem, które nie miały wcześniej do czynienia z komputerami zapraszam do [prostego opisu instalacji ponizej](#Instalacja-Julii)
 
 Zalecane (ale opcjonalne): Fajnie jest mieć jakiś edytor do pisania inny niż notatnik.
 Większość community korzysta z edytora **VSCode**: https://www.julia-vscode.org/docs/dev/gettingstarted/
