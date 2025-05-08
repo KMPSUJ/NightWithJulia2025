@@ -1,5 +1,6 @@
 # NightWithJulia2025
 Event "Night With Julia" organised in 2025. Introduction course and a few problem to hack.
+GPT or any other AI should be able to translate the content of this repo to English if necessary :)
 
 ## Co się będzie działo?
 

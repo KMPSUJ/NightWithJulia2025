@@ -1,0 +1,82 @@
+\documentclass[12pt]{article}
+\usepackage[usenames]{color} %used for font color
+\usepackage{amssymb} %maths
+\usepackage{amsmath} %maths
+\usepackage[utf8]{inputenc} %useful to type directly diacritic characters
+\usepackage[T1]{fontenc}
+\usepackage{a4wide} %domyślny jest często papier listowy, to zmniejsza marginesy
+\usepackage{polski}
+\usepackage{graphicx}  %grafika
+%\usepackage{subcaption} %dwa rysunki obok siebie
+%\graphicspath{ {./rysunki/} } %skąd ma pobierać grafikę
+%\usepackage{svg} % for graphics in svg, with the first compilation enable: "-shell-escape" to use tools to convert svg
+%\usepackage{csvsimple} % to insert csv files 
+
+\usepackage{hyperref}
+
+
+\title{Lista problemów na Noc z Julią}
+\author{}
+\date{} %format jest dowolny(może być nawet miesiąc słownie
+
+\begin{document}
+\maketitle %tworzy tytuł dokumentu
+
+\begin{enumerate}
+\item (ogólne)
+animacja modelu Isinga (są różne algorytmy do tego)
+\item (ogólne)
+jakdojade (wczytywanie listy linii tramwajowych, konstrukcja grafu jako tabeli sąsiedztwa, algorytm Dijkstry, przypisywanie wynikowi linii)
+\item (ogólne)
+prosta gra typu piłka w polu grawitacyjnym (nie mam pojęcia czy istnieje pygame.jl) \emph{Answer: Niewiem, ale istnieje GameZero.jl}
+\item (ogólne)
+Napisz symulację modelu epidemiologicznego na sieci (najprostszej: np. krata z periodycznymi warunkami brzegowymi)
+%%%%%%%%%%%%%%%%
+%
+%
+%%%%%%%%%%%%%%%%
+\item (ODE)
+Porównaj kilka najprostszych algorytmów całkowania numerycznego. Euler, Runge-Kutta, inexplicit Euler.
+Pierwszych dwóch bym nie implementował, tylko nauczył się panować nad \emph{DifferentialEquations.jl}
+\item (ODE)
+Wyznacz funkcję Lane-Emdena do pierwszego miejsca zerowego (i jego położenie). \url{https://en.wikipedia.org/wiki/Lane–Emden_equation} W tym zadaniu chodzi o to, że \emph{DifferentialEquations.jl} wspiera coś co się u nich nazywa callback
+\url{https://docs.sciml.ai/DiffEqDocs/stable/features/callback_functions/}.
+Możesz też zrobić to inaczej (w ramach nauki nowej biblioteki), czyli rozwiązać dla dużego przedziału $t \in [0, T]$ a potem użyć biblioteki do szukania miejsc zerowych \emph{Roots.jl}.
+
+\item (ODE)
+Zbadaj model Kuramoto synchronizacji owadów (cool zabawka). Można go rozwiązywać znacznie optymalniej jeśli wprowadzi się odpowiednie parametry porządku.
+\item (SDE)
+Zbadaj model Kuramoto synchronizacji owadów ale dodaj szum, żeby mieć SDE zamiast ODE. (Myślę, że ciekawe tylko dla ludzi którzy wiedzą co to SDE)
+\item (PDE)
+Zapoznaj się z metodami rozwiązywania PDE (np. przepływ ciepła z dyskretyzacją przestrzeni).
+Są do tego biblioteki \url{https://docs.sciml.ai/MethodOfLines/stable/}, są obliczenia półsymboliczne.
+Ja tego nigdy nie robiłem i ogólnie to jest bardzo trudna tematyka bo PDE potrafią być strasznie nieregularne.
+%%%%%%%%%%%%%%%%
+%
+%
+%%%%%%%%%%%%%%%%
+\item (Optymalizacja)
+Znajdź ekstremum funckji kwadratowej i jej miejsce zerowe używając bibliotek do tego \emph{Roots.jl, Optimization.jl}.
+Potem można zastosować to samo do jakichś ciekawszych problemów.
+%%%%%%%%%%%%%%%%
+%
+% Statystyka, Analiza Danych, Doświadczenia
+%%%%%%%%%%%%%%%%
+\item (DataAnalysis)
+Tu są dane z doświadczenia na 2pf i sprawozdanie. Trzeba powtórzyć analizę, ale korzystająć z Julii.
+Nauczy to pakietów \emph{DataFrames.jl, GLM.jl, LsqFit.jl} i może czegoś jeszcze.
+\item (Statystyka)
+Tu są dane, proponuję je zwizualizować i np. dofitować model liniowy.
+\item (DataAnalysis)
+Znajdź jakieś ciekawe dany i pokaż ile możesz z nich wyciągnąć.
+
+
+
+
+\end{enumerate}
+
+
+
+
+
+\end{document}
