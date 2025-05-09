@@ -1,0 +1,146 @@
+\documentclass[12pt]{article}
+\usepackage[usenames]{color} %used for font color
+\usepackage{amssymb} %maths
+\usepackage{amsmath} %maths
+\usepackage[utf8]{inputenc} %useful to type directly diacritic characters
+\usepackage[T1]{fontenc}
+\usepackage{polski}
+\usepackage{pgffor}
+\usepackage{pdfpages}
+
+% \usepackage{listings}
+\usepackage[theme=default-plain]{jlcode} % https://github.com/wg030/jlcode
+\usepackage{graphicx}  %grafika
+
+%\usepackage{subcaption} %dwa rysunki obok siebie
+%\graphicspath{ {./rysunki/} } %skąd ma pobierać grafikę
+%\usepackage{svg} % for graphics in svg, with the first compilation enable: "-shell-escape" to use tools to convert svg
+%\usepackage{csvsimple} % to insert csv files 
+
+\usepackage[a4paper, left=3cm, right=3cm, top=1.5cm, bottom=2cm]{geometry}
+\usepackage{hyperref}
+
+
+
+\setlength{\parskip}{10pt}
+\setlength{\parindent}{0pt}
+
+\title{Model Kuramoto}
+\author{Bartosz Zbik}
+\date{2024-05-11} %format jest dowolny(może być nawet miesiąc słownie
+
+\begin{document}
+\maketitle %tworzy tytuł dokumentu
+
+Polecam zacząć od przeczytania artykułu na wikipedii \url{https://en.wikipedia.org/wiki/Kuramoto_model}.
+
+
+Generalnie rozważmy układ $N \gg 1$ oscylatorów na cyklach granicznych. Położenie $i$-tego oscylatora jest
+jednoznacznie opisane przez jego fazę $\theta_i \in [0,2\pi]$. Fazy oscylatorów chcą się zsynchronizować.
+Dynamika układu jest opisana przez równianie~(\ref{eq:kuramoto}).
+Chcemy zaobserwować, że w zależności od tego jaka jest wartość parametru sprzężenia, to zachowanie układu jest zupełnie inne.
+
+\textbf{Treść Problemu:} Warunki początkowe losujemy ze standardowego rozkładu normalnego (potem możecie zrobić inne, ja np. wziąłem Cauchy'ego).
+Analityczna wartość parametru krytycznego jest już wyznaczona~(\ref{eq:K-crit}) i chcecie zrobić ładne rysunki jak układ ewoluuje i pooglądać numerycznie jak wygląda zbieżność (jak wyłania się z tego synchronizacja).
+Proponuję na początek $N = 128$ (z Julią to 512 spokojnie się liczyło na moim laptopie) i $K \in \{\frac{1}{4}K_c, \frac{1}{2}K_c, K_c, \frac{3}{2}K_c, 2K_c \}$.
+
+Wskazówka implementacyjne: Skorzystaj z tożsamości trygonometrycznych aby się przekonać, że problem nie jest kwadratowy, ale liniowy.
+
+Problem jest oparty na pracy \url{https://doi.org/10.1016/S0167-2789(00)00094-4}.
+
+
+\section{Opis problemu raz jeszcze (był w sprawozdaniu, to nie kasowałem)}
+Model dany jest przez układ $N$ równań
+\begin{equation}
+\label{eq:kuramoto}
+\dot \theta_i = \omega_i + \frac{K}{N} \sum_{j=1}^N \sin (\theta_j - \theta_i)
+\end{equation}
+
+Definiujemy parametr prządku $r$ i fazę $\psi$
+\begin{equation}
+r e^{i\psi} = \frac{1}{N} \sum_{j=1}^N e^{i\theta_j},
+\end{equation}
+co pozwala przepisać układ równań w postaci
+\begin{equation}
+\label{eq:nice-model}
+\dot \theta_i = \omega_i - r K \sin (\theta_i - \psi)
+\end{equation}
+
+Rozwiązywałem go obliczając w każdym kroku całkowania najpierw $r$ i $\psi$, a potem poszczególne przyrosty wynikające z równania~(\ref{eq:nice-model}) co sprowadzało się do złożoności $\mathcal{O}(3N)$ (albo $\mathcal{O}(2N)$ w zależności, czy $e^{i\theta}$ wymaga obliczenia dwóch funkcji trygonometrycznych czy jednej) , a nie $\mathcal{O}(N^2)$.
+
+Funkcje \texttt{kuramoto!} i \texttt{kuramotoorder} są wykorzystywane przez solver do rozwiązania równania.
+Warunki początkowe $\theta_i(0)$ oraz parametry $\omega_i$ są losowane, a cała procedura schowana jest w funkcjach \texttt{findsol} (dla $\omega \sim \mathcal{N}(0,1)$) oraz \texttt{findcauchysol} (dla $\omega$ z rozkładu Cauchy'ego).
+Funkcje \texttt{asymptoticnormal} i \texttt{asymptoticcauchy} służą już tylko do wygenerowania rysunków i nie ma tam żadnej logiki związanej z samym rozwiązaniem problemu.
+
+
+\section{Kod}
+%\jlinputlisting{solution.jl}
+%\clearpage
+
+
+\section{Wizualizacja wyników}
+Przy rozwiązywaniu przyjąłem $N=512$ i dla każdej wartości $K$ wygenerowałem 30 rozwiązań. 
+W rozwiązaniu jako estymator parametru porządku $r$ brałem średnią po realizacjach, co nie zawsze dawało wynik zgodny z teorią. 
+Prawdopodobnie dlatego, że $r \in [0,1]$, więc przykładowo dla $K < K_c$ fluktuacje $r$ jedynie zawyżają $<r>$.
+
+Na wszystkich poniższych rysunkach szare krzywe odpowiadają poszczególnym trajektoriom, ciągła niebieska linia odpowiada średniemu $r$ liczonemu po trajektoriach, a linia przerywana odpowiada analitycznie wyznaczonej wartości $r$.
+W nagłówkach rysunków podawałem $r$ i $<r>$ z dokładnością do trzech cyfr po przecinku. 
+
+\subsection{Rozkład Normalny}
+Dla $\omega$ pochodzącego ze standardowego rozkładu normalnego
+\begin{equation}
+g(\omega) = \frac{1}{\sqrt{2\pi}} e^{\frac{-\omega^2}{2}}
+\end{equation}
+Wartość krytyczną wyznaczamy dzieląc równianie
+\begin{equation}
+r = K r \int_{-\pi/2}^{\pi/2} \cos^2{(\theta)} g(Kr \sin \theta) d \theta 
+\end{equation}
+przez $r$ i przechodząc do granicy $r \to 0^+$. Dostajemy
+\begin{equation}
+1 = K \int_{-\pi/2}^{\pi/2} \cos^2{(\theta)} \frac{1}{\sqrt{2\pi}} d \theta = \frac{\pi K}{2\sqrt{2\pi}}.
+\end{equation}
+Zatem
+\begin{equation}
+\label{eq:K-crit}
+K_c = \frac{2\sqrt{2}}{\sqrt{\pi}}
+\end{equation}
+
+
+\foreach \n in {1,...,9}{
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{out/kuramoto_normal_\n}
+\end{figure}
+}
+\clearpage
+
+
+\subsection{Rozkład Cauchy'ego}
+Dla $\omega$ pochodzącego z rozkładu Cauchy'ego
+\begin{equation}
+g(\omega) = \frac{1}{\pi} \frac{1}{1 + \omega^2}.
+\end{equation}
+Wyznaczamy parametr krytyczny z równania (całkowanie w Matematice)
+\begin{equation}
+r = K r \int_{-\pi/2}^{\pi/2} \cos^2{(\theta)} g(Kr \sin \theta) d \theta =
+2 K r \frac{1}{2 + 2\sqrt{1+K^2r^2}},
+\end{equation}
+co po przekształceniu daje
+\begin{equation}
+r = \sqrt{\frac{K-2}{K}} \quad \text{dla}~K>2
+\end{equation}
+oraz wartość krytyczną
+\begin{equation}
+K_c = 2
+\end{equation}
+
+
+\foreach \n in {1,...,9}{
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{out/kuramoto_cauchy_\n}
+\end{figure}
+}
+
+
+\end{document}
